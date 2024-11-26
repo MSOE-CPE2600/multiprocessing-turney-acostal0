@@ -1,3 +1,12 @@
+/*********************************************
+ * Filename: mandelmovie.c
+ * Assignment: Lab 11
+ * Section: 121
+ * Description: This lab generates a Mandelbrot set images using multiprocessing.
+ * Author: Lizbeth Acosta
+ * Date: 11/19/24
+ * Note: compile with
+ *********************************************/
 /// 
 //  mandel.c
 //  Based on example code found here:
