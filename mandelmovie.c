@@ -1,13 +1,13 @@
 /*********************************************
  * Filename: mandelmovie.c
- * Assignment: Lab 11
+ * Assignment: Lab 12
  * Section: 121
- * Description: This lab generates a Mandelbrot set images using multiprocessing.
+ * Description: This lab generates a Mandelbrot set images using multithreading.
  * Author: Lizbeth Acosta
- * Date: 11/19/24
+ * Date: 12/3/24
  * Note: compile with
  * $ make
- * $ ./mandelmovie -p <num processes> -f <num frames>
+ * $ ./mandelmovie -p <num processes> -f <num frames> -t <num threads>
  * 
  *********************************************/
 #include <stdio.h>
@@ -22,9 +22,10 @@ int main(int argc, char *argv[]) {
     int processes = 1;  //default to 1 process
     int frames = 50;    //default to 50 frames
     int opt;
+    int threads = 1;
 
     //parse command-line args
-    while ((opt = getopt(argc, argv, "p:f:")) != -1) {
+    while ((opt = getopt(argc, argv, "p:f:t:")) != -1) {
         switch (opt) {
             case 'p':
                 processes = atoi(optarg);
@@ -37,6 +38,13 @@ int main(int argc, char *argv[]) {
                 frames = atoi(optarg);
                 if (frames < 1) {
                     fprintf(stderr, "Number of frames must be at least 1.\n");
+                    print_usage(argv[0]);
+                }
+                break;
+            case 't':
+                threads = atoi(optarg);
+                if (threads < 1) {
+                    fprintf(stderr, "Number of threads must be at least 1.\n");
                     print_usage(argv[0]);
                 }
                 break;
@@ -69,13 +77,15 @@ int main(int argc, char *argv[]) {
             char frame_name[50];
             char scale[20];
             double scale_value = 1.0 / (1.0 + (i * 0.1));  //zoom progression
+            char thread_count[10];
 
             snprintf(frame_name, sizeof(frame_name), "frame%d.jpg", i);
             snprintf(scale, sizeof(scale), "%f", scale_value);
+            snprintf(thread_count, sizeof(thread_count), "%d", threads);
 
             //execlp to run the mandel program
             execlp("./mandel", "./mandel", "-x", "-0.4", "-y", "-0.60", "-W", "800",
-                   "-H", "800", "-s", scale, "-o", frame_name, (char *)NULL);
+                   "-H", "800", "-s", scale, "-o", frame_name,"-t", thread_count, (char *)NULL);
 
             //if execlp fails
             perror("execlp");
@@ -97,6 +107,6 @@ int main(int argc, char *argv[]) {
 }
 
 void print_usage(const char *name) {
-    fprintf(stderr, "Usage: %s -p <num_processes> -f <num_frames>\n", name);
+    fprintf(stderr, "Usage: %s -p <num_processes> -f <num_frames> -t <num_threads>\n", name);
     exit(EXIT_FAILURE);
 }
